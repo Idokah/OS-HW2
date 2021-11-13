@@ -24,4 +24,4 @@ test: $(PROG)
 	./$(PROG) 11 24 36 7 5 > out.log
 
 clean:
-	rm -rf $(PROG) *.log *.o *.tx
+	rm -rf $(PROG) factors *.log *.o *.tx

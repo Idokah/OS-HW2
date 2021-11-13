@@ -1,9 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include <unistd.h>     // for fork, sleep etc.
-#include <sys/types.h>
+#include <unistd.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include "ex2_q1.h"
@@ -14,8 +12,9 @@ int main(int argc, char* argv[]) {
     for (int i = 1 ; i < argc; i++){
         child_exec_factors(argv[i]);
     }
+
     int primary_count = 0;
-    for (int i =0 ; i < argc ; i++) {
+    for (int i =0 ; i < argc-1 ; i++) {
         primary_count += wait_and_is_primary();
     }
 
@@ -24,7 +23,8 @@ int main(int argc, char* argv[]) {
 
 void child_exec_factors(char* input) {
     if (fork() == 0) {
-        int num = sscanf(input, "%d", &num);
+        int num = 0;
+        sscanf(input, "%d", &num);
         replace_stdout(num);
         execve(PROG_NAME, create_argv(input), NULL);
     }
@@ -38,7 +38,9 @@ char** create_argv(char* input) {
     strcpy(my_argv[1],input);
     return my_argv;
 }
+
 int replace_stdout(int num){
+    printf("%d",num);
     char filename[MAX_FILE_LEN];
     sprintf(filename, "%d.tx", num);
     close(1);
@@ -58,6 +60,7 @@ void print_end_msg(const int num_primes)
 
 int open_file(char *name) {
     int fd;
+    printf("%s",name);
     fd = open(name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd < 0)  // open failed
     {
