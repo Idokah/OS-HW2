@@ -6,50 +6,55 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include "ex2_q1.h"
 
-int factors(int num);
 
-int open_file(char *name);
-
-#define MAX_NUM_LEN 10
 
 int main(int argc, char* argv[]) {
-
-    char c[MAX_NUM_LEN];
-    int num = 1;
-    int count = 0;
-
-    while (num > 0) {
-        scanf("%s", c);
-        count++;
-
-        if (sscanf(c, "%d", &num)) {
-            if (fork() == 0) {
-                //export to func
-                close(1);
-                char filename[64];
-                sprintf(filename, "%d.tx", num);
-                open_file(filename);
-                int response = factors(num);
-                printf("%d", response);
-                exit(response);
-            }
-        }
+    for (int i = 1 ; i < argc; i++){
+        child_exec_factors(argv[i]);
+    }
+    int primary_count = 0;
+    for (int i =0 ; i < argc ; i++) {
+        primary_count += wait_and_is_primary();
     }
 
-    // wait and get primary func
-    int primary = 0;
-    int status;
-    for (int i = 0; i < count; i++) {
-        //wait and return status
-        wait(&status);
-        primary += WEXITSTATUS(status);
-    }
-
-    //print_end_msg func
-    printf("There were %d prime numbers\n", primary);
+    print_end_msg(primary_count);
 }
 
+void child_exec_factors(char* input) {
+    if (fork() == 0) {
+        int num = sscanf(input, "%d", &num);
+        replace_stdout(num);
+        execve(PROG_NAME, create_argv(input), NULL);
+    }
+}
+
+char** create_argv(char* input) {
+    char** my_argv = (char**) malloc(sizeof(char*)*3);
+    my_argv[0]=PROG_NAME;
+    my_argv[1] = (char*) malloc(strlen(input) + 1);
+    my_argv[2] = NULL;
+    strcpy(my_argv[1],input);
+    return my_argv;
+}
+int replace_stdout(int num){
+    char filename[MAX_FILE_LEN];
+    sprintf(filename, "%d.tx", num);
+    close(1);
+    return open_file(filename);
+}
+
+int wait_and_is_primary(){
+    int status;
+    wait(&status);
+    return WEXITSTATUS(status);
+}
+
+void print_end_msg(const int num_primes)
+{
+    printf("There were %d prime numbers\n", num_primes);
+}
 
 int open_file(char *name) {
     int fd;

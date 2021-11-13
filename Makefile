@@ -5,13 +5,20 @@ PROG = ex2_q1
 
 all: $(PROG) test
 
-$(PROG).o: $(PROG).c factors.c
+$(PROG).o: $(PROG).c
 	@$(ECHO)
 	$(CC) $(CFLAGS) -c factors.c -o factors.o
 	$(CC) $(CFLAGS) -c $(PROG).c -o $(PROG).o
 
-$(PROG): $(PROG).o factors.o
-	$(CC) $(CFLAGS) *.o -o $(PROG)
+factors.o: factors.c
+	@$(ECHO)
+	$(CC) $(CFLAGS) -c factors.c -o factors.o
+
+factors: factors.o
+	$(CC) $(CFLAGS) factors.o -o factors
+
+$(PROG): $(PROG).o factors
+	$(CC) $(CFLAGS) $(PROG).o -o $(PROG)
 
 test: $(PROG)
 	./$(PROG) 11 24 36 7 5 > out.log
