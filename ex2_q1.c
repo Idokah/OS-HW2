@@ -22,22 +22,26 @@ int main(int argc, char* argv[]) {
 }
 
 void child_exec_factors(char* input) {
-    if (fork() == 0) {
+    if (do_fork() == 0) {
+        char* my_argv[3];
+        char program_input[MAX_NUM_LEN];
+        char fileName[MAX_FILE_LEN];
+
+        sprintf(fileName, "%s.tx", input);
+
+        sprintf(program_input,"%s", input);
+
+        my_argv[0] = PROG_NAME;
+        my_argv[1] = program_input;
+        my_argv[2] = NULL;
+
         int num = 0;
         sscanf(input, "%d", &num);
         replace_stdout(num);
-        execve(PROG_NAME, create_argv(input), NULL);
+        execve(PROG_NAME, my_argv, NULL);
     }
 }
 
-char** create_argv(char* input) {
-    char** my_argv = (char**) malloc(sizeof(char*)*3);
-    my_argv[0]=PROG_NAME;
-    my_argv[1] = (char*) malloc(strlen(input) + 1);
-    my_argv[2] = NULL;
-    strcpy(my_argv[1],input);
-    return my_argv;
-}
 
 int replace_stdout(int num){
     printf("%d",num);
@@ -68,4 +72,13 @@ int open_file(char *name) {
         exit(2);
     }
     return (fd);
+}
+
+int do_fork() {
+    int pid = fork();
+    if (pid < 0) {
+        perror("Cannot fork()");
+        exit(EXIT_FAILURE);
+    }
+    return pid;
 }
