@@ -1,12 +1,4 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <string.h>
 #include "ex2_q1.h"
-
-
 
 int main(int argc, char* argv[]) {
     for (int i = 1 ; i < argc; i++){
@@ -46,7 +38,7 @@ void child_exec_factors(char* input) {
 int replace_stdout(int num){
     printf("%d",num);
     char filename[MAX_FILE_LEN];
-    sprintf(filename, "%d.tx", num);
+    sprintf(filename, "%d.txt", num);
     close(1);
     return open_file(filename);
 }

@@ -17,5 +17,6 @@ int get_factors(int num) {
                 primary = 0;
         }
     }
+	printf("\n");
     return primary;
 }

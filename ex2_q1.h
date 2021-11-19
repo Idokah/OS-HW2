@@ -5,6 +5,14 @@
 #define MAX_NUM_LEN 10
 #define MAX_FILE_LEN 15
 #define PROG_NAME "factors"
+#include<stdio.h>
+#include<stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/stat.h>
+
 
 int open_file(char *name);
 void child_exec_factors(char* input);
