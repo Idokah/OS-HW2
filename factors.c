@@ -18,5 +18,6 @@ int get_factors(int num) {
         }
     }
 	printf("\n");
-    return primary;
+    if (num == 1) primary = 0;
+	return primary;
 }
